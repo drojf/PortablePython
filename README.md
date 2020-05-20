@@ -1,21 +1,50 @@
-# PLEASE READ FIRST
+# Embedded Python with Tkinter
 
-It has come to my attention that you can get a fairly small distribution of python just by downloading the 'Zero' version of WinPython (their official stripped down version). I now recommend doing the following, instead of using this repository.
+## What is this?
 
-- Download the latest 'Zero' version of WinPython (64 or 32 bit as desired): https://winpython.github.io/
-- Run the executable to extract the files
-- Take out only the 'python' folder containing the main python distribution. Within that folder:
-  - Delete the 'Doc' folder (saves about 8mb), unless you really need the python documentation
-  - Delete all \_\_pycache\_\_ folders. I'm not sure whether I had those because I had run python before, or if it already existed after extraction.
+This server hosts a customized version of the embedded python for Windows which you can get from [the python website](https://www.python.org/downloads/windows/). It adds tkinter which is nost present in the default embedded python zip, and is a .7z file instead of a .zip file.
 
-After doing this and compressing the python folder using .7z, the archive is around 14 MB. 
+This repository also has documentation on how the custom embedded python was created, and documentation on gotchas when using it.
 
-Note that if you just use plain .zip, the size will be much larger, since each file will be compressed individually. If you want to use some other archive container which doesn't support archiving files together, it's recommended to TAR it first (to get .tar.gz or .tar.zip), or to zip with STORE mode, then zip the STORE mode .zip file again.
+It is the 32-bit version for maximum compatability. You can follow the below instructions if you want to make a 64-bit version.
 
-Perhaps in the future I will make a script which does this automatically.
+## [Click here for Download / Binaries / Releases](https://github.com/drojf/PortablePython/releases)
 
-# PortablePython
-Portable Python which can be run without installing (based off WinPython)
+[Click here for Download / Binaries / Releases](https://github.com/drojf/PortablePython/releases)
 
-# Download / Binaries
-See the releases section: [Releases](https://github.com/drojf/PortablePython/releases)
+## Why not use the default embedded python .zip?
+
+I would like to keep an archive of Python which I can use in future projects, along with documentation of any gotchas/issues which may come up when using it.
+
+Also, if you need tkinter, this project has it built in, while the default embedded python releases do not.
+
+## How was it created?
+
+- Download the non-embedded version of python from main python website: https://www.python.org/downloads/windows/ 
+- Install python (recommend "all users" so it's easy to find the path) 
+- Copy these files out of the normal python install (I followed [these instructions](https://stackoverflow.com/questions/37710205/python-embeddable-zip-install-tkinter/44169516):
+  - the tcl folder
+  - the tkinter folder
+  - tcl86t.dll
+  - tk86t.dll
+  - _tkinter.pyd
+- Option A:
+  - zip the tcl and tkinter folders into `tkinter.zip`, copy into embedded python root folder
+  - copy the remaining files int embedded python root folder
+  - modify the `python37._pth` file - add the name of the zip to import on startup `tkinter.zip`
+- Option B:
+  - just copy all the files into the embedded pyhton root folder. This can make copying the python folder slow, even on a SSD as there will be many files included for tkinter
+
+## Gotchas
+- Python embedded will only look at files adjacent to the .exe, and in the python37.zip file, due its `python37._pth`. This is on purpose to system libraries interfering with its operation. If you wish to change this, you can do the following
+  - If you want to import your own packages, you can either put them next to the .exe, or you can manually add them to your sys.path (just a list).
+```
+import sys
+import os
+
+sys.path.append(os.getcwd()) # allow imports from the directory where python is being run from
+sys.path.append("c:/path/to/scan/for/libraries") # add any other paths you want to scan
+print(sys.path) # check that the paths seem correct
+```
+
+- Embedded python also seems to use a different `Lib/site.py` (see https://docs.python.org/3/library/site.html). This means 'special' functions like `exit()` are not imported by default - you need to use sys.exit(), or raise SystemExit, [see here](https://stackoverflow.com/questions/19747371/python-exit-commands-why-so-many-and-when-should-each-be-used) . This can break many scripts as they usually assume these functions are present.
