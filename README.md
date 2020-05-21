@@ -1,24 +1,14 @@
-# Embedded Python with Tkinter
+# Embedded Python Notes
+
+**You can now use Python's own embedded/standalone python distro: https://www.python.org/downloads/windows/** . This repository only contains some information on using/modifying it.
 
 ## What is this?
 
-This server hosts a customized version of the embedded python for Windows which you can get from [the python website](https://www.python.org/downloads/windows/). It adds tkinter which is nost present in the default embedded python zip, and is a .7z file instead of a .zip file.
+This repository has some documentation on how to modify a custom embedded python, and gotchas when using it.
 
-This repository also has documentation on how the custom embedded python was created, and documentation on gotchas when using it.
+## How do I modify the default embedded python distribution?
 
-It is the 32-bit version for maximum compatability. You can follow the below instructions if you want to make a 64-bit version.
-
-## [Click here for Download / Binaries / Releases](https://github.com/drojf/PortablePython/releases)
-
-[Click here for Download / Binaries / Releases](https://github.com/drojf/PortablePython/releases)
-
-## Why not use the default embedded python .zip?
-
-I would like to keep an archive of Python which I can use in future projects, along with documentation of any gotchas/issues which may come up when using it.
-
-Also, if you need tkinter, this project has it built in, while the default embedded python releases do not.
-
-## How was it created?
+As an example, we'll add the tkinter package
 
 - Download the non-embedded version of python from main python website: https://www.python.org/downloads/windows/ 
 - Install python (recommend "all users" so it's easy to find the path) 
@@ -28,14 +18,20 @@ Also, if you need tkinter, this project has it built in, while the default embed
   - tcl86t.dll
   - tk86t.dll
   - _tkinter.pyd
-- Option A:
-  - zip the tcl and tkinter folders into `tkinter.zip`, copy into embedded python root folder
-  - copy the remaining files int embedded python root folder
-  - modify the `python37._pth` file - add the name of the zip to import on startup `tkinter.zip`
-- Option B:
-  - just copy all the files into the embedded pyhton root folder. This can make copying the python folder slow, even on a SSD as there will be many files included for tkinter
+- copy all these into the embedded python root folder
+
+### Adding packages as zip files
+
+If a package only contains python scripts, you can add it as a zip file (but it's not always a good idea):
+
+- zip your packages into `example_archive.zip`, and copy it into embedded python root folder. It should contain a folder for each package you want to include.
+- copy any non-python scripts (like .dll files) into the embedded python root folder
+- modify the `python37._pth` file - add the name of the zip to import on startup `example_archive.zip` (whatever you called your .zip file before)
+
+If you have any issues, try using it without a zip file first to see if the zip file is causing problems. You probably only want to use zip files if there are hundreds of python scripts.
 
 ## Gotchas
+
 - Python embedded will only look at files adjacent to the .exe, and in the python37.zip file, due its `python37._pth`. This is on purpose to system libraries interfering with its operation. If you wish to change this, you can do the following
   - If you want to import your own packages, you can either put them next to the .exe, or you can manually add them to your sys.path (just a list).
 ```
